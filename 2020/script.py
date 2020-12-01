@@ -25,6 +25,12 @@ def part2(???):
 
 if __name__ == "__main__":
     parse_line = ???
+
+    # run test against provided example
+    example_input = load_input(parse_line, path="example.txt")
+    assert example_input == ???
+
+    # run against real data
     values = load_input(parse_line)
     print("part 1: {}".format(part1(values)))
     print("part 2: {}".format(part2(values)))
