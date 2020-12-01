@@ -43,6 +43,12 @@ def part2(values):
 
 if __name__ == "__main__":
     parse_line_func = lambda l: int(l.replace("\n", ""))
+
+    # test against example
+    test_values = load_input(parse_line_func, path="example.txt")
+    assert part1(test_values) == 514579
+
+    # test against real data
     input_values = load_input(parse_line_func)
     print("part 1: {}".format(part1(input_values)))
     print("part 2: {}".format(part2(input_values)))
