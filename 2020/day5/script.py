@@ -4,7 +4,7 @@ from utils.utils import load_input
 
 
 def decode_alphabetic_binary(code_string, pos_char):
-    # directly read 
+    # turn e.g. e.g. FFBBFBB into a number using base 2 maths
     reversed_code = code_string[::-1] # so that char indexes align with value of position
     position_values = [
         int(char == pos_char) * 2**char_index for char_index, char in enumerate(reversed_code)
@@ -13,8 +13,8 @@ def decode_alphabetic_binary(code_string, pos_char):
 
 
 def resolve_seat_id(raw_code):
-    # turn e.g. FFBBFBBLRR into two binary parts 0011011 and 011
-    # turn these to ints and then combine to get the seat ID
+    # split the raw code into row and column components
+    # turn these to numbers and combine to get the seat ID
     row_number = decode_alphabetic_binary(raw_code[:-3], "B")
     column_number = decode_alphabetic_binary(raw_code[-3:], "R")
     return row_number * 8 + column_number
