@@ -3,15 +3,20 @@ sys.path.append("..")
 from utils.utils import load_input
 
 
-def resolve_seat_id(l):
+def decode_alphabetic_binary(code_string, pos_char):
+    # directly read 
+    reversed_code = code_string[::-1] # so that char indexes align with value of position
+    position_values = [
+        int(char == pos_char) * 2**char_index for char_index, char in enumerate(reversed_code)
+    ]
+    return sum(position_values)
+
+
+def resolve_seat_id(raw_code):
     # turn e.g. FFBBFBBLRR into two binary parts 0011011 and 011
     # turn these to ints and then combine to get the seat ID
-    row_code = "".join(["0" if c == 'F' else "1" for c in l[:-3]])
-    row_number = int(row_code, 2)
-
-    column_code = "".join(["0" if c == 'L' else "1" for c in l[-3:]])
-    column_number = int(column_code, 2)
-
+    row_number = decode_alphabetic_binary(raw_code[:-3], "B")
+    column_number = decode_alphabetic_binary(raw_code[-3:], "R")
     return row_number * 8 + column_number
 
 
@@ -38,3 +43,6 @@ if __name__ == "__main__":
     values = load_input()
     print("part 1: {}".format(part1(values)))
     print("part 2: {}".format(part2(values)))
+
+    assert part1(values) == 826
+    assert part2(values) == 678
