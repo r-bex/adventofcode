@@ -1,21 +1,8 @@
+import sys
+sys.path.append("..")
+from utils.utils import load_input
+
 import re
-
-
-def load_input(parsing_func, path="data.txt"):
-    """Load lines from the specified file and apply parsing_func linewise
-
-        Args:
-            parsing_func (str -> T): a function that takes a string as input
-            path (str): the input data file location. Default = "data.txt"
-
-        Returns:
-            list(T): a list of the files contents after applying the parsing function
-    """
-    with open(path, 'r') as f:
-        lines = f.readlines()
-    f.close()
-    non_empty = [l for l in lines if len(l.replace("\n", "")) > 0]
-    return list(map(parsing_func, non_empty))
 
 
 def parse_input(l):
@@ -46,11 +33,11 @@ def part2(password_data):
 
 if __name__ == "__main__":
     # run test against provided example
-    example_input = load_input(parse_input, path="example.txt")
+    example_input = load_input(path="example.txt", parsing_func=parse_input)
     assert part1(example_input) == 2
     assert part2(example_input) == 1
 
     # run against real data
-    values = load_input(parse_input)
+    values = load_input(parsing_func=parse_input)
     print("part 1: {}".format(part1(values)))
     print("part 2: {}".format(part2(values)))
