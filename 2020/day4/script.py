@@ -1,6 +1,9 @@
+import sys
+sys.path.append("..")
+from utils.utils import load_input
+
 from functools import reduce
 
-from utils import load_input
 from validators import number_validator, regex_validator, height_validator, eye_colour_validator
 
 
