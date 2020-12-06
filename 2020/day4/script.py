@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-from utils.utils import load_input
+from utils.utils import load_input, chunk_lines_by_blanks
 
 from functools import reduce
 
@@ -54,25 +54,9 @@ class Passport:
         return cls(fields)
 
 
-def extract_passports(lines):
-    # chunk sequence of empty and non-empty lines into passports
-    prev_lines = []
-    passports = []
-    for line in lines:
-        if len(line) > 0:
-            prev_lines.append(line)
-        else:
-            new_passport = Passport.from_lines(prev_lines)
-            passports.append(new_passport)
-            prev_lines = []
-    if len(prev_lines) > 0:
-        new_passport = Passport.from_lines(prev_lines)
-        passports.append(new_passport)
-    return passports
-
-
 def count_valid_passports(lines):
-    passports = extract_passports(lines)
+    line_groups = chunk_lines_by_blanks(lines)
+    passports = [Passport.from_lines(line_group) for line_group in line_groups]
     valid_passports = list(filter(lambda p: p.is_valid(), passports))
     return len(valid_passports)
 
