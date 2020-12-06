@@ -4,7 +4,7 @@ from utils.utils import load_input
 
 
 def decode_alphabetic_binary(code_string, pos_char):
-    # turn e.g. e.g. FFBBFBB into a number using base 2 maths
+    # turn e.g. FFBBFBB into a number using base 2 maths
     reversed_code = code_string[::-1] # so that char indexes align with value of position
     position_values = [
         int(char == pos_char) * 2**char_index for char_index, char in enumerate(reversed_code)

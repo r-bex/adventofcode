@@ -1,3 +1,5 @@
+BLANK_LINE = ""
+
 def load_input(path="data.txt",
                remove_empty_lines=True,
                parsing_func=lambda l: l.replace("\n", "")):
@@ -21,3 +23,26 @@ def load_input(path="data.txt",
         return list(map(parsing_func, lines))
     else:
         return lines
+
+def chunk_lines_by_blanks(lines):
+    """Take list of lines (strings) and use empty ones to split into groups
+
+        Args:
+            list(str): lines of the input file
+        
+        Returns:
+            list(list(str)): split into groups
+    """
+    # remove start or end blank lines
+    if lines[0] == BLANK_LINE:
+        lines = lines[1:]
+    if lines[-1] == BLANK_LINE:
+        lines = lines[:-1]
+
+    chunks = []
+    while BLANK_LINE in lines:
+        blank_index = lines.index(BLANK_LINE)
+        chunks.append(lines[0:blank_index])
+        lines = lines[blank_index + 1:]
+    chunks.append(lines) # add remainder without blank lines in
+    return chunks
