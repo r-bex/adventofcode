@@ -26,7 +26,7 @@ def parse_line_to_bag_mapping(line):
         ]
         return (parent_colour, child_colours_with_counts)
 
-def reverse_dict(dct):
+def invert_one_to_many_dict(dct):
     """Invert dictionary of 1-to-many parent-children mappings
 
         e.g. {1: ['a', 'b']} -> {'a': 1, 'b': 1}
@@ -48,15 +48,23 @@ def reverse_dict(dct):
     return inverted_dct
         
 
-def part1(pc_dict, target_colour="shiny gold"):
-    # find outermost bags
+def count_outermost_bags(pc_dict, bag_colour="shiny gold"):
+    """Count the unique bag colours that could contain the target bag_colour
+
+        Args:
+            pc_dict (dict): parent-child mappings of bag requirements
+            bag_colour (str): the bag colour to calculate outermost options for
+
+        Returns:
+            int - the number of bag_colours that could contain the target bag_colour
+    """
     just_colours = {
         parent: [
             colour for (count, colour) in children_with_counts
         ] for parent, children_with_counts in pc_dict.items()
     }
-    cp_dict = reverse_dict(just_colours)
-    unresolved_parents = cp_dict[target_colour]
+    cp_dict = invert_one_to_many_dict(just_colours)
+    unresolved_parents = cp_dict[bag_colour]
     final_parents = []
     while len(unresolved_parents):
         for unp in unresolved_parents:
@@ -69,33 +77,38 @@ def part1(pc_dict, target_colour="shiny gold"):
                 unresolved_parents.extend(cp_dict[unp])
     return len(final_parents)
 
-def get_inner_count(dct, bag_colour, num_of_these_bags):
-    # get total bags contained in bag plus itself - recursive
-    if bag_colour not in dct or len(dct[bag_colour]) == 0:
-        inner_count = 0
-    else:
-        inner_count = sum([
-            get_inner_count(dct, inner_colour, inner_num) for (inner_num, inner_colour) in dct[bag_colour]
-        ])
-    return num_of_these_bags + num_of_these_bags * inner_count
+def get_inner_count(pc_dct, bag_colour):
+    """Recursively count all the bags contained in a bag of the target colour
 
-def part2(pc_dict, target_colour='shiny gold'):
-    # count all bags INSIDE target colour (so minus 1 after)
-    total_including_outer = get_inner_count(pc_dict, target_colour, 1)
-    return total_including_outer - 1
+        Args:
+            pc_dct (dict): parent-child mappings of bag requirements
+            bag_colour (str): the bag colour to sum the contents of
+
+        Returns:
+            int - the total inner contents of the specified bag colour
+    """
+    if bag_colour not in pc_dct or len(pc_dct[bag_colour]) == 0:
+        contents = 0
+    else:
+        contents = sum([
+            inner_num + inner_num * get_inner_count(pc_dct, inner_colour)
+                for (inner_num, inner_colour) in pc_dct[bag_colour]
+        ])
+    return contents
 
 if __name__ == "__main__":
     # run test against provided example
     example_pt1_input = load_input(path="example_part1.txt", parsing_func=parse_line_to_bag_mapping)
     example_pt1_dict = {parent: children for (parent, children) in example_pt1_input}
-    assert part1(example_pt1_dict) == 4
+    assert count_outermost_bags(example_pt1_dict) == 4
 
+    # run part 2 against its own example
     example_pt2_input = load_input(path="example_part2.txt", parsing_func=parse_line_to_bag_mapping)
     example_pt2_dict = {parent: children for (parent, children) in example_pt2_input}
-    assert part2(example_pt2_dict) == 126
+    assert get_inner_count(example_pt2_dict, 'shiny gold') == 126
 
     # run against real data
     values = load_input(parsing_func=parse_line_to_bag_mapping)
     value_dict = {parent: children for (parent, children) in values}
-    print("part 1: {}".format(part1(value_dict)))
-    print("part 2: {}".format(part2(value_dict)))
+    print("part 1: {}".format(count_outermost_bags(value_dict)))
+    print("part 2: {}".format(get_inner_count(value_dict, 'shiny gold')))
