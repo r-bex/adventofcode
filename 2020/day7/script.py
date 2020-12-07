@@ -77,7 +77,7 @@ def count_outermost_bags(pc_dict, bag_colour="shiny gold"):
                 unresolved_parents.extend(cp_dict[unp])
     return len(final_parents)
 
-def get_inner_count(pc_dct, bag_colour):
+def get_inner_count(pc_dct, bag_colour='shiny gold'):
     """Recursively count all the bags contained in a bag of the target colour
 
         Args:
@@ -98,17 +98,14 @@ def get_inner_count(pc_dct, bag_colour):
 
 if __name__ == "__main__":
     # run test against provided example
-    example_pt1_input = load_input(path="example_part1.txt", parsing_func=parse_line_to_bag_mapping)
-    example_pt1_dict = {parent: children for (parent, children) in example_pt1_input}
-    assert count_outermost_bags(example_pt1_dict) == 4
+    example_pt1_input = dict(load_input(path="example_part1.txt", parsing_func=parse_line_to_bag_mapping))
+    assert count_outermost_bags(example_pt1_input) == 4
 
     # run part 2 against its own example
-    example_pt2_input = load_input(path="example_part2.txt", parsing_func=parse_line_to_bag_mapping)
-    example_pt2_dict = {parent: children for (parent, children) in example_pt2_input}
-    assert get_inner_count(example_pt2_dict, 'shiny gold') == 126
+    example_pt2_input = dict(load_input(path="example_part2.txt", parsing_func=parse_line_to_bag_mapping))
+    assert get_inner_count(example_pt2_input) == 126
 
     # run against real data
-    values = load_input(parsing_func=parse_line_to_bag_mapping)
-    value_dict = {parent: children for (parent, children) in values}
-    print("part 1: {}".format(count_outermost_bags(value_dict)))
-    print("part 2: {}".format(get_inner_count(value_dict, 'shiny gold')))
+    real_dict = dict(load_input(parsing_func=parse_line_to_bag_mapping))
+    print("part 1: {}".format(count_outermost_bags(real_dict)))
+    print("part 2: {}".format(get_inner_count(real_dict)))
