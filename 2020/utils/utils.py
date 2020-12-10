@@ -46,3 +46,28 @@ def chunk_lines_by_blanks(lines):
         lines = lines[blank_index + 1:]
     chunks.append(lines) # add remainder without blank lines in
     return chunks
+
+def sliding_windows_across_list(l, window_size=2, as_tuples=False):
+    """Return list of window-size slices spanning list l
+
+        Args:
+            l (list(T)): the list to be windowed
+            window_size (int): the desired window size
+            as_tuples (bool): if True, windows returned as tuples
+
+        Returns:
+            list(list(T)): a list of rolling windows of size
+                window_size across list l. Unless as_tuples in which
+                case list of tuples
+    """
+    if window_size > len(l):
+        raise ValueError("Window size should be smaller than list")
+    
+    windows = [
+        l[window_start:window_start+window_size]
+        for window_start in range(0, len(l) - window_size + 1)
+    ]
+    if as_tuples:
+        windows = [tuple(w) for w in windows]
+
+    return windows
