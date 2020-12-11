@@ -15,13 +15,15 @@ DIRECTIONS = [
 apply_direction = lambda coord, direction: (coord[0] + direction[0], coord[1] + direction[1])
 
 
-def is_nearest_seat_in_direction_occupied(grid, coord, direction):
+def is_direction_occupied(grid, coord, direction, immediate_only):
     """Check whether the nearest seat in a given direction is occupied
 
         Args:
             grid (list(list(int)): the seat layout as a 2d array
             coord (int, int): the reference coordinate/seat
             direction (int, int): the direction to check, as row & column deltas
+            immediate_only (bool): if True, only consider space immediately adjacent.
+                If False, consider nearest seat in direction, if it exists.
 
         Returns:
             bool - whether the nearest seat from the coord in the given direction
@@ -39,6 +41,9 @@ def is_nearest_seat_in_direction_occupied(grid, coord, direction):
             
             if grid[new_row][new_col] == EMPTY:
                 return False
+
+            if immediate_only:
+                return False
             
             coord = (new_row, new_col)
         else:
@@ -47,55 +52,35 @@ def is_nearest_seat_in_direction_occupied(grid, coord, direction):
     return False
 
 
-def count_occupied_neighbours(grid, coord, by_visibility=False):
-    """Return the coordinates of all seats adjacent to a specified position
-
-        NB: will  be less than 8 if the seat is at the edge of the grid
-
-        Args:
-            row (int): the row coord
-            col (int): the col coord
-            num_rows (int): the total number of rows
-            num_cols (int): the total number of cols
-
-        Returns:
-            list((int, int)): list of coords of adjacent seats
-    """
-    num_rows = len(grid)
-    num_cols = len(grid[0])
-
-    if by_visibility:
-        directions_occupied = [is_nearest_seat_in_direction_occupied(grid, coord, dirn) for dirn in DIRECTIONS]
-    else:
-        neighbour_coords = [apply_direction(coord, dirn) for dirn in DIRECTIONS]
-        in_bounds = [(r, c) for(r, c) in neighbour_coords if 0 <= r < num_rows and 0 <= c < num_cols]
-        directions_occupied = [grid[r][c] == OCCUPIED for (r, c) in in_bounds]
-    return directions_occupied.count(True)
-
-
-def calculate_next_state(current_state, occupied_neighbours, occupied_threshold):
+def calculate_next_state(current_state, num_occupied_neighbours, occupation_tolerance):
     """Use current state and neighbour states to calculate new state according to rules
 
         Args:
             current_state (str): either '.', 'L' or '#'
-            neighbour_states (list(str)): the states of surrounding seats
+            num_occupied_neighbours (int): number of adjacent occupied seats
+            occupation_tolerance (int): if at least this many adjacent seats are
+                occupied the current state will flip from occupied to empty
 
         Returns:
             str: the next state of the current position, either '.', 'L' or '#'
     """
-    if current_state == EMPTY and occupied_neighbours == 0:
+    if current_state == EMPTY and num_occupied_neighbours == 0:
         return OCCUPIED
-    elif current_state == OCCUPIED and occupied_neighbours >= occupied_threshold:
+    elif current_state == OCCUPIED and num_occupied_neighbours >= occupation_tolerance:
         return EMPTY
     else:
         return current_state
 
 
-def iterate(grid, occupied_threshold, by_visibility):
+def iterate(grid, occupation_tolerance, immediate_only):
     """Take the current grid state, apply iteration rules and return new grid state
 
         Args:
             grid (list(list(string)): the current grid state, as a 2D array of strings
+            occupation_tolerance (int): if at least this many adjacent seats are
+                occupied the current state will flip from occupied to empty
+            immediate_only (bool): whether to consider only immediately adjacent spaces,
+                seats or otherwise (True), or to consider nearest seats by direction (False)
 
         Returns:
             list(list(string)): the next grid state
@@ -105,31 +90,33 @@ def iterate(grid, occupied_threshold, by_visibility):
     for row_index, row in enumerate(grid):
         new_row = []
         for column_index, current_state in enumerate(row):
-            num_occupied_neighbours = count_occupied_neighbours(grid, (row_index, column_index), by_visibility=by_visibility)
-            new_row.append(calculate_next_state(current_state, num_occupied_neighbours, occupied_threshold))
+            num_occupied_directions = [
+                is_direction_occupied(grid, (row_index, column_index), dirn, immediate_only) for dirn in DIRECTIONS
+            ].count(True)
+            new_row.append(calculate_next_state(current_state, num_occupied_directions, occupation_tolerance))
         new_grid.append(new_row)
     
     return (new_grid, new_grid == grid)
 
 
-def count_occupied_seats_after_iterations(initial_grid, occupied_threshold, by_visibility):
-    """Iterate grid by rules and count total occupied seats after stabilising
+def count_occupied_seats_after_iterations(initial_grid, occupation_tolerance, immediate_only):
+    """Iterate grid by rules and count total occupied seats once stabilised
 
         Args:
             initial_grid (list(list(int))): the seat grid as a 2d array
-            occupied_threshold (int): if at least this many seats adjacent to an
+            occupation_tolerance (int): if at least this many seats adjacent to an
                 occupied seat are also occupied, the seat will become empty
-            by_visibility (bool): whether to use the immediate adjacent spaces (False)
-                or to search for the nearest visible seat in that direction (True)
+            immediate_only (bool): whether to consider only immediately adjacent spaces,
+                seats or otherwise (True), or to consider nearest seats by direction (False)
 
         Returns:
-            int - the number of occupied seats either immediately adjacent or by line of sight
+            int - the total occupied seats once grid has stabilised
     """
     iterate_grid = True
     grid = initial_grid
 
     while iterate_grid:
-        grid, grid_changed = iterate(grid, occupied_threshold=occupied_threshold, by_visibility=by_visibility)
+        grid, grid_changed = iterate(grid, occupation_tolerance, immediate_only)
         if grid_changed:
             iterate_grid = False
 
@@ -138,11 +125,11 @@ def count_occupied_seats_after_iterations(initial_grid, occupied_threshold, by_v
 
 def part1(initial_grid):
     # iterate based only on immediate neighbours
-    return count_occupied_seats_after_iterations(initial_grid, occupied_threshold=4, by_visibility=False)
+    return count_occupied_seats_after_iterations(initial_grid, occupation_tolerance=4, immediate_only=True)
 
 def part2(initial_grid):
     # iterate based on nearest visible seats
-    return count_occupied_seats_after_iterations(initial_grid, occupied_threshold=5, by_visibility=True)
+    return count_occupied_seats_after_iterations(initial_grid, occupation_tolerance=5, immediate_only=False)
 
 
 if __name__ == "__main__":
