@@ -5,7 +5,8 @@ from utils.utils import load_input
 import numpy as np
 from scipy.spatial.distance import cityblock
 
-direction_vectors = {
+
+DIRECTION_VECTORS = {
     "N": np.array([0, 1]),
     "E": np.array([1, 0]),
     "S": np.array([0, -1]),
@@ -14,15 +15,28 @@ direction_vectors = {
 
 
 def parse_instruction(line):
+    # parse file line into instruction plus value
     line = line.replace("\n", "")
     action = line[0]
     amount = int(line[1:])
     return (action, amount)
 
 
-def rotate_vector(vector, angle_deg):
-    # assumes rotating about origin 0,0
+def rotate_vector(vector, angle_deg, clockwise):
+    """Rotate the provided vector around (0,0) by the provided angle
+
+        Args:
+            vector (np.array): (x,y) as row vector, e.g. np.array([3,4])
+            angle_deg (int): the angle to rotate by in degrees
+            clockwise (bool): if True rotate clockwise, if False anti-clockwise
+
+        Returns:
+            vector (np.array): the rotated vector as a row, e.g. np.array([4,-3])
+    """
+    if clockwise:
+        angle_deg = -1 * angle_deg
     angle_rads = np.radians(angle_deg)
+
     rotation_matrix = np.array([
         [np.cos(angle_rads), -np.sin(angle_rads)],
         [np.sin(angle_rads), np.cos(angle_rads)]
@@ -31,56 +45,35 @@ def rotate_vector(vector, angle_deg):
     return np.int64(np.rint(np.transpose(rotated_vector)))
 
 
-def part1(instructions, initial_position=(0, 0), initial_bearing=(1,0)):
-    position = np.array(initial_position)
-    bearing = np.array(initial_bearing)
+def part1(instructions, initial_ship_position=(0, 0), initial_ship_bearing=(1,0)):
+    # rotations apply to ship and bearing is tracked
+    position = np.array(initial_ship_position)
+    bearing = np.array(initial_ship_bearing)
 
     for (direction, magnitude) in instructions:
         if direction in ["L", "R"]:
-            angle_multiplier = 1 if direction == "L" else -1
-            bearing = rotate_vector(bearing, angle_multiplier * magnitude)
+            clockwise = direction == "R"
+            bearing = rotate_vector(bearing, magnitude, clockwise)
         else:
-            direction_vector = bearing if direction == "F" else direction_vectors[direction]
+            direction_vector = bearing if direction == "F" else DIRECTION_VECTORS[direction]
             position += magnitude * direction_vector
             
-    return cityblock(initial_position, position)
+    return cityblock(initial_ship_position, position)
 
-def move_towards_waypoint(ship_position, waypoint_position, magnitude):
-    waypoint_offset = waypoint_position - ship_position
-    ship_position += magnitude * waypoint_offset
-    waypoint_position = ship_position + waypoint_offset
-    return (ship_position, waypoint_position)
 
-def rotate_waypoint_about_ship(ship_position, waypoint_position, rotation_direction, rotation_angle):
-    waypoint_offset = waypoint_position - ship_position
-    angle_multiplier = -1 if rotation_direction == "R" else 1
-    new_waypoint_offset = rotate_vector(waypoint_offset, angle_multiplier*rotation_angle)
-    new_waypoint_position = ship_position + new_waypoint_offset
-    return new_waypoint_position
-
-def part2(instructions, initial_waypoint_position=(10, 1), initial_ship_position=(0, 0)):
+def part2(instructions, initial_ship_position=(0, 0), initial_waypoint_offset=(10, 1)):
+    # rotations apply to waypoint and ship -> waypoint offset is tracked
     ship_position = np.array(initial_ship_position)
-    waypoint_position = np.array(initial_waypoint_position)
+    waypoint_offset = np.array(initial_waypoint_offset)
 
     for (direction, magnitude) in instructions:
         if direction in ["L", "R"]:
-            # rotate waypoint about ship
-            waypoint_position = rotate_waypoint_about_ship(
-                ship_position,
-                waypoint_position,
-                direction,
-                magnitude
-            )
+            clockwise = direction == "R"
+            waypoint_offset = rotate_vector(waypoint_offset, magnitude, clockwise)
         elif direction in ["N", "E", "W", "S"]:
-            # move waypoint
-            waypoint_position += magnitude * direction_vectors[direction]
+            waypoint_offset += magnitude * DIRECTION_VECTORS[direction]
         elif direction == "F":
-            # move in direction of waypoint (waypoint moves with it)
-            (ship_position, waypoint_position) = move_towards_waypoint(
-                ship_position,
-                waypoint_position,
-                magnitude
-            )
+            ship_position += magnitude * waypoint_offset
 
     return cityblock(initial_ship_position, ship_position)
 
