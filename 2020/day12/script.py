@@ -7,10 +7,10 @@ from scipy.spatial.distance import cityblock
 
 
 DIRECTION_VECTORS = {
-    "N": np.array([0, 1]),
-    "E": np.array([1, 0]),
-    "S": np.array([0, -1]),
-    "W": np.array([-1, 0])
+    "N": np.array([[0], [1]]),
+    "E": np.array([[1], [0]]),
+    "S": np.array([[0], [-1]]),
+    "W": np.array([[-1], [0]])
 }
 
 
@@ -26,12 +26,12 @@ def rotate_vector(vector, angle_deg, clockwise):
     """Rotate the provided vector around (0,0) by the provided angle
 
         Args:
-            vector (np.array): (x,y) as row vector, e.g. np.array([3,4])
+            vector (np.array): vector as numpy array with shape (2,1) i.e. column vector
             angle_deg (int): the angle to rotate by in degrees
             clockwise (bool): if True rotate clockwise, if False anti-clockwise
 
         Returns:
-            vector (np.array): the rotated vector as a row, e.g. np.array([4,-3])
+            vector (np.array): the rotated vector as a numpy column vector
     """
     if clockwise:
         angle_deg = -1 * angle_deg
@@ -41,11 +41,11 @@ def rotate_vector(vector, angle_deg, clockwise):
         [np.cos(angle_rads), -np.sin(angle_rads)],
         [np.sin(angle_rads), np.cos(angle_rads)]
     ])
-    rotated_vector = np.dot(rotation_matrix, np.transpose(vector))
-    return np.int64(np.rint(np.transpose(rotated_vector)))
+    rotated_vector = rotation_matrix.dot(vector)
+    return np.int64(np.rint(rotated_vector))
 
 
-def part1(instructions, initial_ship_position=(0, 0), initial_ship_bearing=(1,0)):
+def part1(instructions, initial_ship_position=np.array([[0], [0]]), initial_ship_bearing=np.array([[1], [0]])):
     # rotations apply to ship and bearing is tracked
     position = np.array(initial_ship_position)
     bearing = np.array(initial_ship_bearing)
@@ -61,7 +61,7 @@ def part1(instructions, initial_ship_position=(0, 0), initial_ship_bearing=(1,0)
     return cityblock(initial_ship_position, position)
 
 
-def part2(instructions, initial_ship_position=(0, 0), initial_waypoint_offset=(10, 1)):
+def part2(instructions, initial_ship_position=np.array([[0], [0]]), initial_waypoint_offset=np.array([[10], [1]])):
     # rotations apply to waypoint and ship -> waypoint offset is tracked
     ship_position = np.array(initial_ship_position)
     waypoint_offset = np.array(initial_waypoint_offset)
