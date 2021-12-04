@@ -24,7 +24,7 @@ if __name__ == "__main__":
     print("Part 1: {}".format(part1(real_input)))
 
     # part2
-    # assert part2(example_input) = ???
+    # assert part2(example_input) == ???
     # print("Part 2: {}".format(part2(real_input)))
 ```
 
