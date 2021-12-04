@@ -13,9 +13,12 @@ def part2(data):
 if __name__ == "__main__":
     # run test against provided example
     example_input = load_input(path="example.txt")
-    assert part1(example_input) == ???
+    real_input = load_input()
 
-    # run against real data
-    values = load_input()
+    # part 1
+    assert part1(example_input) == ???
     print("part 1: {}".format(part1(values)))
+
+    # part2
+    assert part2(example_input) = ???
     print("part 2: {}".format(part2(values)))
