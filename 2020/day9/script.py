@@ -1,5 +1,5 @@
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 from utils.utils import load_input
 
 def check_sum_condition(num, prev_nums):

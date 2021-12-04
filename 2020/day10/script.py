@@ -1,5 +1,5 @@
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 from utils.utils import load_input, sliding_windows_across_list
 
 from copy import deepcopy
