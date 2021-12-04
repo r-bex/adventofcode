@@ -12,6 +12,7 @@ def part1(data):
     return num_increases
 
 def part2(data):
+    """Compare sums of sliding windows instead of direct list of ints"""
     window_size = 3
     sums = []
     for i in range(len(data) - window_size + 1):
