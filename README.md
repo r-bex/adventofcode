@@ -21,7 +21,7 @@ Running `python script.py` will run your `part1` function against the data in `e
 
 If you don't already have a root level directory for the year you're working on, create that.
 
-The following command will create a new directory 'day2' in the '2021' folder and populate it with files for data.txt, example.txt and the template script.
+The following command will create a new directory `day2` in the `2021` folder and populate it with files for `data.txt`, `example.txt` and the template script, renamed to `script.py`.
 
-`./new_day.sh 2021 day2`
+```./new_day.sh 2021 day2```
 
