@@ -1,20 +1,26 @@
 BLANK_LINE = ""
 
 def load_input(path="data.txt",
-               remove_empty_lines=True,
-               parsing_func=lambda l: l.replace("\n", "")):
+                remove_newlines=True,
+                remove_empty_lines=True,
+                parsing_func=lambda l: str(l)):
     """Load lines from the specified file and apply parsing_func linewise
 
         Args:
-            parsing_func (str -> T): a function that takes a string as input
             path (str): the input data file location. Default = "data.txt"
-
+            remove_newlines (bool): whether to trim the "\n"s from the end of each line. Default = True.
+            remove_empty_lines (bool): whether to skip empty lines in input file. Default = True.
+            parsing_func (str -> T): a function that takes a string as input
+            
         Returns:
             list(T): a list of the files contents after applying the parsing function
     """
     with open(path, 'r') as f:
         lines = f.readlines()
     f.close()
+
+    if remove_newlines:
+        lines = [l.replace("\n", "") for l in lines]
 
     if remove_empty_lines:
         lines = [l for l in lines if len(l.replace("\n", "")) > 0]
