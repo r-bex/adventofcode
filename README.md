@@ -21,11 +21,11 @@ if __name__ == "__main__":
 
     # part 1
     assert part1(example_input) == ???
-    print("Part 1: {}".format(part1(values)))
+    print("Part 1: {}".format(part1(real_input)))
 
     # part2
     # assert part2(example_input) = ???
-    # print("Part 2: {}".format(part2(values)))
+    # print("Part 2: {}".format(part2(real_input)))
 ```
 
 This means that running `python script.py` will load the example and real puzzle input, and run your `part1` and `part2` functions against the example data in `example.txt`, checking it matches the provided example answers. If it does, it will apply the functions to the real input and print out the answers for you to submit in the AoC page.
