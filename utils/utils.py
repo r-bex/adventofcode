@@ -77,3 +77,17 @@ def sliding_windows_across_list(l, window_size=2, as_tuples=False):
         windows = [tuple(w) for w in windows]
 
     return windows
+
+def flatten_nested_list(nl):
+    """Flatten a nested list into a single list
+
+    NB: will only flatten one layer deep, not recursively
+
+    Args:
+        nl (list(list)): a list of lists
+
+    Returns:
+        list: a single flattened list
+    """
+
+    return [item for l in nl for item in l]
