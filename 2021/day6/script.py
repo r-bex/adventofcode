@@ -17,7 +17,7 @@ from utils.utils import load_input, time_execution
 DAYS_BETWEEN_SPAWN = 7
 DAYS_TO_MATURE = 2
 
-# -- Method 1: iterate the sequence forward 1 day at a time --
+# -- Method 1: iterate the sequence forward 1 day at a time. Very slow --
 
 def iterate_dts_list(dts_values, num_iterations=1, debug=False):
     """Iterate a DTS sequence 1 day forward according to the rules above
@@ -50,10 +50,10 @@ def iterate_dts_list(dts_values, num_iterations=1, debug=False):
 
 def count_future_population_method1(starting_seq, num_iterations, debug=False):
     """Calculate the population after X iterations using iteration method"""
-    seq_after_iterations = iterate_dts_list(starting_seq, num_iterations)
+    seq_after_iterations = iterate_dts_list(starting_seq, num_iterations, debug=debug)
     return len(seq_after_iterations)
 
-# -- Method 2: recursively count a fish's children -- 
+# -- Method 2: recursively count a fish's children. Still quite slow. -- 
 
 def generate_baby_dates(current_date, max_date, current_dts):
     """Calculate a lanternfish's future spawning dates/iterations"""
@@ -79,27 +79,26 @@ def count_all_future_children(date, max_date, current_dts, debug=False):
             directly or indirectly
     """
     if debug:
-        print("***")
-        print(f"Date: {date}/{max_date} - current DTS = {current_dts}")
+        print(f"***\nDate: {date}/{max_date} - current DTS = {current_dts}")
 
-    if date + current_dts > max_date:
-        if debug:
-            print("Not having children")
-            print("------")
-        return 1
-    else:
-        spawn_dates = generate_baby_dates(date, max_date, current_dts)
+    spawn_dates = generate_baby_dates(date, max_date, current_dts)
+    if len(spawn_dates):
         if debug:
             print(f"Will spawn on dates: {spawn_dates}")
             print("Calculating children...")
         return 1 + sum([count_all_future_children(
             sd, max_date, DAYS_BETWEEN_SPAWN + DAYS_TO_MATURE
         ) for sd in spawn_dates])
+    else:
+        if debug:
+            print("No time left to spawn\n--------")
+        return 1
 
 def count_future_population_method2(starting_seq, num_iterations, debug=False):
     """Calculate the population after X iterations using recursion method"""
     return sum([
-        count_all_future_children(1, num_iterations, dts, debug=debug) for dts in starting_seq
+        count_all_future_children(1, num_iterations, dts, debug=debug)
+            for dts in starting_seq
     ])
 
 if __name__ == "__main__":
@@ -109,11 +108,10 @@ if __name__ == "__main__":
     real_input = load_input(parsing_func=parse_line)[0]
 
     # part 1
-    time_execution(1, count_future_population_method2, *(example_input, 256), **{})
-    #assert count_future_population_method1(example_input, 80) == 5934 # 7.3ms
-    #assert count_future_population_method2(example_input, 80) == 5934 # 4.2ms
-    #print("Part 1 method 1: {}".format(count_future_population_method1(real_input, 80))) # 337ms
-    #print("Part 1 method 2: {}".format(count_future_population_method2(real_input, 80))) # 175ms
+    assert count_future_population_method1(example_input, 80) == 5934 # 7.3ms
+    assert count_future_population_method2(example_input, 80) == 5934 # 4.2ms
+    print("Part 1 method 1: {}".format(count_future_population_method1(real_input, 80))) # 337ms
+    print("Part 1 method 2: {}".format(count_future_population_method2(real_input, 80))) # 175ms
 
     # part 2
     #assert count_future_population_method1(example_input, 256) == 26984457539 # not finished after 60s
