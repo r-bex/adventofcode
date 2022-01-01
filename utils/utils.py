@@ -1,3 +1,5 @@
+import datetime as dt
+
 BLANK_LINE = ""
 
 def load_input(path="data.txt",
@@ -108,3 +110,28 @@ def bidirectional_inclusive_range(start, end):
         return list(range(start, end + 1))
     else:
         return list(range(start, end - 1, -1))
+
+def time_execution(n_measurements, func, *args, **kwargs):
+    """Time function call with args provided and print stats
+
+    NB: timeit does this better but is fiddly to use in scripts
+
+    Args:
+        n_measurements (int): the number of measurements to take
+        func (function): the function to call
+        *args (tuple of args): arguments to pass to this function
+        **kwargs (dict of kwargs): key word arguments to pass to this function
+
+    Returns:
+        None
+    """
+    times_microseconds = []
+    for i in range(n_measurements):
+        time_before = dt.datetime.now()
+        func(*args, **kwargs)
+        time_after = dt.datetime.now()
+        times_microseconds.append((time_after - time_before).microseconds)
+    print(f"Min: {min(times_microseconds)} us")
+    print(f"Min: {max(times_microseconds)} us")
+    print(f"Mean: {sum(times_microseconds)/len(times_microseconds)} us")
+
