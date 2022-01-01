@@ -91,3 +91,20 @@ def flatten_nested_list(nl):
     """
 
     return [item for l in nl for item in l]
+
+def bidirectional_inclusive_range(start, end):
+    """Generate inclusive range as list, increasing or decreasing
+
+    Examples: (7,9) -> [7, 8, 9] and (9, 7) -> [9, 8, 7]
+    
+    Args:
+        start (int): the start of the range
+        end (int): the end of the range
+
+    Returns:
+        list(int): list of numbers in inclusive range
+    """
+    if end > start:
+        return list(range(start, end + 1))
+    else:
+        return list(range(start, end - 1, -1))
