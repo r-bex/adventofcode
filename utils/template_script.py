@@ -1,6 +1,5 @@
-import sys
-sys.path.append("../..")
 from utils.utils import load_input
+
 
 def part1(data):
     return -1

@@ -1,5 +1,6 @@
 import datetime as dt
 
+
 BLANK_LINE = ""
 
 def load_input(path="data.txt",

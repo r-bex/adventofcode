@@ -6,7 +6,7 @@ All in Python so far.
 
 From the root level run `conda env create -f environment.yml` to create the dev environment and then do `conda activate aoc` to activate the environment you just created.
 
-This will load the `utils` package as an available module. If you make changes to the utils code, these should be reflected immediately. (Fact check this...)
+As well as installing the few third party packages used in the solutions, this will load the `utils` package as an available module. If you make changes to the utils code, these will be reflected immediately without needing to re-run anything.
 
 ### How to use template
 
