@@ -2,7 +2,13 @@ I rarely get more than a week or two into AoC before getting too busy, so these 
 
 All in Python so far.
 
-### How to use
+### Dev
+
+From the root level run `conda env create -f environment.yml` to create the dev environment and then do `conda activate aoc` to activate the environment you just created.
+
+This will load the `utils` package as an available module. If you make changes to the utils code, these should be reflected immediately. (Fact check this...)
+
+### How to use template
 
 1. Create a new folder for the day you're solving. See `How to use new_day.sh` section below.
 2. Copy example data from AoC page into `example.txt`.
