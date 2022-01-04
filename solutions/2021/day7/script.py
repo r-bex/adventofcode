@@ -1,6 +1,9 @@
 import sys
-sys.path.append("../..")
-from utils.utils import load_input
+
+import importlib
+importlib.import_module("../../utils", "adventofcode.utils")
+
+from utils import load_input
 
 def calculate_minimum_fuel_to_align_crabs(starting_positions, fuel_cost_func=lambda x: x):
     """Calculate the cheapest crab alignment cost given crab positions

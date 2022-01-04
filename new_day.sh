@@ -1,8 +1,7 @@
-echo "Setting up new day $1/$2"
-cd "$1"
-mkdir "$2"
-cd "$2"
-cp ../../utils/template_script.py ./script.py
-touch data.txt
-touch example.txt
-echo "Setup of $1/$2 complete"
+new_dir=solutions/$1/$2
+echo "Setting up new day at $new_dir"
+mkdir $new_dir
+cp utils/template_script.py $new_dir/script.py
+touch $new_dir/data.txt
+touch $new_dir/example.txt
+echo "Setup of $new_dir complete"
