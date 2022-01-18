@@ -1,4 +1,4 @@
-from utils import utils
+from utils.utils import load_input
 
 from display_solver import DisplaySolver
 
@@ -51,14 +51,12 @@ def parse_line(line):
         list, list: input and output signals respectively
     """
     left, right = line.split(" | ")
-    left_signals = left.split(" ")
-    right_signals = right.split(" ")
-    return left_signals, right_signals
+    return left.split(" "), right.split(" ")
 
 if __name__ == "__main__":
     # load example and real input data
-    example_input = utils.load_input(path="example.txt", parsing_func=parse_line)
-    real_input = utils.load_input(parsing_func=parse_line)
+    example_input = load_input(path="example.txt", parsing_func=parse_line)
+    real_input = load_input(parsing_func=parse_line)
 
     # part 1
     assert part1(example_input) == 26
