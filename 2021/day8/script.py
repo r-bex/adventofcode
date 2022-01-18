@@ -1,5 +1,6 @@
 from utils.utils import load_input
 
+from display_solver import DisplaySolver
 
 def part1(data):
     return -1
@@ -8,6 +9,12 @@ def part1(data):
 def part2(data):
     return -1
 
+def parse_line(l):
+    """blah"""
+    left, right = l.split(" | ")
+    left_signals = left.split(" ")
+    right_signals = right.split(" ")
+    return left_signals, right_signals
 
 if __name__ == "__main__":
     # load example and real input data
