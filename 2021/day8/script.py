@@ -4,27 +4,53 @@ from display_solver import DisplaySolver
 
 
 def part1(data):
-    # input should be list of tuples where tuple[0] is a list of the input
-    # signals (10 of them) and tuple[1] is a list of the output signals (4)
+    """Decode the displays and count the number of times digits appear
+
+    Args:
+        data (list(tuple)): list of input & display signal pairs. Tuple[0]
+            is list of ten input signals. Tuple[1] is list of 4 display
+            signals, which form the display to be decoded.
+
+    Returns:
+        int - the number of times certain digits appear in the decoded
+            displays.
+    """
     digits_to_count = [1, 4, 7, 8]
     counter = 0
-    for input_signals, output_signals in data:
+    for input_signals, display_signals in data:
         solver = DisplaySolver(input_signals, debug=False)
-        output_digits = solver.translate_signals(output_signals)
-        counter += len([d for d in output_digits if d in digits_to_count])
+        display_digits = solver.translate_signals(display_signals)
+        counter += len([d for d in display_digits if d in digits_to_count])
     return counter
 
 def part2(data):
-    output_sum = 0
-    for input_signals, output_signals in data:
-        solver = DisplaySolver(input_signals, debug=False)
-        output_digits = solver.translate_signals(output_signals)
-        output_sum += int("".join([str(d) for d in output_digits]))
-    return output_sum
+    """Decode the displays and sum all the resulting digits
 
-def parse_line(l):
-    """Take a full line and split into intput & output signals"""
-    left, right = l.split(" | ")
+    Args:
+        data (list(tuple)): list of input & display signal pairs. Tuple[0]
+            is list of ten input signals. Tuple[1] is list of 4 display
+            signals, which form the display to be decoded.
+
+    Returns:
+        int - the sum of all the digits in the decoded displays
+    """
+    display_digit_sum = 0
+    for input_signals, display_signals in data:
+        solver = DisplaySolver(input_signals, debug=False)
+        display_digits = solver.translate_signals(display_signals)
+        display_digit_sum += int("".join([str(d) for d in display_digits]))
+    return display_digit_sum
+
+def parse_line(line):
+    """Take a full line and split into intput & output signals
+
+    Args:
+        line (str): the raw line from the file
+
+    Returns:
+        list, list: input and output signals respectively
+    """
+    left, right = line.split(" | ")
     left_signals = left.split(" ")
     right_signals = right.split(" ")
     return left_signals, right_signals

@@ -2,28 +2,22 @@ from collections import Counter
 
 from utils import utils
 
-# """
-#   0:      1:      2:      3:      4:
-#  aaaa    ....    aaaa    aaaa    ....
-# b    c  .    c  .    c  .    c  b    c
-# b    c  .    c  .    c  .    c  b    c
-#  ....    ....    dddd    dddd    dddd
-# e    f  .    f  e    .  .    f  .    f
-# e    f  .    f  e    .  .    f  .    f
-#  gggg    ....    gggg    gggg    ....
+#   0:      1:      2:      3:      4:      5:      6:      7:      8:      9:
+#  aaaa    ....    aaaa    aaaa    ....    aaaa    aaaa    aaaa    aaaa    aaaa
+# b    c  .    c  .    c  .    c  b    c  b    .  b    .  .    c  b    c  b    c
+# b    c  .    c  .    c  .    c  b    c  b    .  b    .  .    c  b    c  b    c
+#  ....    ....    dddd    dddd    dddd    dddd    dddd    ....    dddd    dddd
+# e    f  .    f  e    .  .    f  .    f  .    f  e    f  .    f  e    f  .    f
+# e    f  .    f  e    .  .    f  .    f  .    f  e    f  .    f  e    f  .    f
+#  gggg    ....    gggg    gggg    ....    gggg    gggg    ....    gggg    gggg
 
-#   5:      6:      7:      8:      9:
-#  aaaa    aaaa    aaaa    aaaa    aaaa
-# b    .  b    .  .    c  b    c  b    c
-# b    .  b    .  .    c  b    c  b    c
-#  dddd    dddd    ....    dddd    dddd
-# .    f  e    f  .    f  e    f  .    f
-# .    f  e    f  .    f  e    f  .    f
-#  gggg    gggg    ....    gggg    gggg
-# """
-
-# can pin down all edges just from signal lengths/frequencies except D and G
-# e.g. the letter that appears in the 3- but not the 2- is the top bar, A
+# ---- TERMINOLOGY -----
+# Display = a sequence of 4 digits/signals
+# Signal = a combination of segments, representing a digit. e.g. 'gde' or 'ACF'
+# Segment = an edge in the digit representation, e.g. the top bar 'A'
+# Signal segments = the "scrambled" incoming segments e.g. 'gde' for 7
+# True segments = the true position of the edge in the digit e.g. 'ACF' for 7
+# If no scrambling was happening, it'd be a -> A, b -> B and so on
 
 TRUE_SEGMENT_SET = set("ABCDEFG")
 SIGNAL_SEGMENT_SET = set("abcdefg")
@@ -42,7 +36,7 @@ TRUE_SEGMENT_TO_DIGIT_MAP = {
 }
 
 class DisplaySolver:
-    """Builds segment map from input signals and then decodes output signals
+    """Builds segment map from input signals and then decodes display signals
 
     Args:
         input_signals (list(str)): the ten scrambled input signals
@@ -59,8 +53,9 @@ class DisplaySolver:
         self.input_signals = input_signals
         self.debug = debug
 
+        # this dictionary will store a map from signal segment to true segment
         self.segment_map = {}
-        self.solve_map()
+        self._solve_map()
 
     def _is_solved(self):
         """Check whether the map has been completely constructed yet
@@ -76,47 +71,48 @@ class DisplaySolver:
         
         if self.debug:
             print(self.segment_map)
-            print("All keys present? ", all_keys)
-            print("All values present? ", all_values)
+            print("All expected keys present? ", all_keys)
+            print("All expected values present? ", all_values)
 
         return all_keys and all_values
 
     def _get_signals_by_length(self, length):
-        """Return the subset of the input signals with the given length"""
-        return [x for x in self.input_signals if len(x) == length]
+        """Return the subset of the input signals with with length X"""
+        return [s for s in self.input_signals if len(s) == length]
 
-    def _get_signals_by_frequency(self, frequency):
+    def _get_signal_segments_by_frequency(self, frequency):
+        """Return the signal segments that appear X times across all input signals"""
         flat_list = utils.flatten_nested_list(self.input_signals)
         frequencies = Counter(flat_list)
         return [char for (char, freq) in frequencies.items() if freq == frequency]
 
     def _add_mapping(self, signal_segment, true_segment):
-        """This is just here to add debug value without repeating 7 times"""
+        """This function is just to add debug option without repeating 7 times"""
         if self.debug:
             print(f"Adding {signal_segment} -> {true_segment} to segment mapping")
         self.segment_map[signal_segment] = true_segment
 
-    def solve_map(self):
-        """Apply logic to generate segment map"""
+    def _solve_map(self):
+        """Apply logic to decode input signals and build map"""
         if self.debug:
             print(self.input_signals)
 
-        # A is the signal in the 3-length but not 2-length signals
-        l3 = self._get_signals_by_length(3)[0] # should just be 1
-        l2 = self._get_signals_by_length(2)[0] # should just be 1
+        # A is the segment in the 3-length but not 2-length signals
+        l3 = self._get_signals_by_length(3)[0]
+        l2 = self._get_signals_by_length(2)[0]
         a = set(l3).difference(set(l2)).pop()
         self._add_mapping(a, "A")
 
         # F is the only segment that is in 9 of the 10 digits
-        f = self._get_signals_by_frequency(9)[0]
+        f = self._get_signal_segments_by_frequency(9)[0]
         self._add_mapping(f, "F")
 
         # B is the only segment in exactly 6 of the 10 digits
-        b = self._get_signals_by_frequency(6)[0]
+        b = self._get_signal_segments_by_frequency(6)[0]
         self._add_mapping(b, "B")
 
         # E is the only segment in exactly 4 of the 10 digits
-        e = self._get_signals_by_frequency(4)[0]
+        e = self._get_signal_segments_by_frequency(4)[0]
         self._add_mapping(e, "E")
 
         # now we know F, C is the one in the length-2 signal that isn't F
@@ -132,11 +128,11 @@ class DisplaySolver:
         g = SIGNAL_SEGMENT_SET.difference(set(self.segment_map.keys())).pop()
         self._add_mapping(g, "G")
 
-    def translate_signals(self, signals_to_decode):
-        """Use the solved mapping to decode output signals
+    def translate_signals(self, display_signals):
+        """Use the solved mapping to decode display signals
 
         Args:
-            signals_to_decode (list(str)): 4 output signals
+            display_signals (list(str)): 4 signals that require decoding
 
         Returns:
             list(int): the corresponding 4 digits, decoded
@@ -147,9 +143,9 @@ class DisplaySolver:
                 map is solved. Current map: {self.segment_map}
             """)
         
-        output_digits = []
-        for output_signal in signals_to_decode:
-            true_segments = "".join(sorted([self.segment_map[char] for char in output_signal]))
-            output_digits.append(TRUE_SEGMENT_TO_DIGIT_MAP[true_segments])
+        display_digits = []
+        for display_signal in display_signals:
+            true_segments = "".join(sorted([self.segment_map[char] for char in display_signal]))
+            display_digits.append(TRUE_SEGMENT_TO_DIGIT_MAP[true_segments])
 
-        return output_digits
+        return display_digits
