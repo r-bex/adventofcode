@@ -38,7 +38,19 @@ DIGIT_SEGMENT_MAP = {
 }
 
 class DisplaySolver:
+    """Builds segment map from input signals and then decodes output signals
+
+    Args:
+        input_signals (list(str)): the ten scrambled input signals
+    
+    Attributes:
+        segment_map dict (str -> str): mapping between signal segments and true segments
+        solved (bool): whether the mapping has been completely constructed yet
+    """
     def __init__(self, input_signals):
+        if len(input_signals) != 10:
+            raise ValueError("DisplaySolver needs 10 input_signals to initialise")
+        
         self.input_signals = input_signals
         self.segment_map = {}
         self.solved = self._is_solved()
@@ -52,8 +64,9 @@ def _is_solved(self):
     Returns:
         boolean - True if segment map has been built completely, False otherwise
     """
-    # does map contain all edges uniquely
-    return False
+    all_keys = all([ss in self.segment_map for ss in SIGNAL_SEGMENT_SET])
+    all_values = all([ts in self.segment_map.values() for ts in TRUE_SEGMENT_SET])
+    return all_keys and all_values
 
 def solve_map(self, left_signals):
     """Apply logic to generate segment map"""
