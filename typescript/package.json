@@ -1,0 +1,19 @@
+{
+  "name": "aoc-ts",
+  "version": "1.0.0",
+  "description": "Typescript solutions to Advent of Code challenges (2023)",
+  "main": "index.js",
+  "scripts": {
+    "challenge": "npx tsc && node 2023/day$DAY/main.js",
+    "new": "mkdir 2023/day$DAY && touch 2023/day$DAY/input.txt && touch 2023/day$DAY/example1.txt && touch 2023/day$DAY/example2.txt && cp 2023/common/template.ts 2023/day$DAY/main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.1"
+  }
+}
