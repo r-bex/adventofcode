@@ -1,8 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compareAnswers = void 0;
-var compareAnswers = function (expected, actual) {
-    var outcome = expected === actual ? "SUCCESS" : "OOPS";
-    return "Expected ".concat(expected, ", you got ").concat(actual, " -> ").concat(outcome, "\n");
+exports.getDayFromFilename = exports.compareAnswers = void 0;
+const compareAnswers = (expected, actual) => {
+    const outcome = expected === actual ? 'SUCCESS' : 'OOPS';
+    return `Expected ${expected}, you got ${actual} -> ${outcome}\n`;
 };
 exports.compareAnswers = compareAnswers;
+const getDayFromFilename = (filePath) => {
+    try {
+        const parts = filePath.split('/');
+        const day = parts.find((s) => s.includes('day'));
+        return parseInt(day.slice(3));
+    }
+    catch {
+        console.error(`Could not extract day from path ${filePath}`);
+        return -1;
+    }
+};
+exports.getDayFromFilename = getDayFromFilename;
