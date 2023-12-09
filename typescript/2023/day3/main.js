@@ -40,6 +40,7 @@ const part1 = (lines) => {
       const startCoord = { row: rowIndex, column: match.index }
       const endCoord = { row: rowIndex, column: match.index + match[0].length - 1 }
       const hitbox = getHitbox(startCoord, endCoord, numRows, numCols)
+      // check if the number's hitbox contains a symbol and if so increment counter
       if (hitboxContainsSymbol(lines, hitbox)) {
         counter += parseInt(match[0])
       }
@@ -63,7 +64,7 @@ const part2 = (lines) => {
   const numCols = lines[0].length
   // every time a gear (*) is encountered when scanning line
   // by line, keep track of the number that was adjacent to it
-  let gearTracker = {}
+  const gearTracker = {}
   lines.forEach((row, rowIndex) => {
     ;[...row.matchAll(/\d+/g)].forEach((match) => {
       const startCoord = { row: rowIndex, column: match.index }
@@ -76,6 +77,7 @@ const part2 = (lines) => {
           // use the gear's row-col combination as its unique key in the tracker
           const gearKey = `${row}-${column}`
           if (gearKey in gearTracker) {
+            // missing the defaultdict rn
             gearTracker[gearKey].push(parseInt(match[0]))
           } else {
             gearTracker[gearKey] = [parseInt(match[0])]
